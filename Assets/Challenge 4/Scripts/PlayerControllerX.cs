@@ -17,6 +17,7 @@ public class PlayerControllerX : MonoBehaviour
     private float powerupStrength = 25; // how hard to hit enemy with powerup
 
     private InputSystem_Actions controls;
+    private Coroutine powerupCoroutine;
 
     void Awake()
     {
@@ -53,6 +54,12 @@ public class PlayerControllerX : MonoBehaviour
             Destroy(other.gameObject);
             hasPowerup = true;
             powerupIndicator.SetActive(true);
+
+            if (powerupCoroutine != null)
+            {
+                StopCoroutine(powerupCoroutine);
+            }
+            powerupCoroutine = StartCoroutine(PowerupCooldown());
         }
     }
 
@@ -62,6 +69,7 @@ public class PlayerControllerX : MonoBehaviour
         yield return new WaitForSeconds(powerUpDuration);
         hasPowerup = false;
         powerupIndicator.SetActive(false);
+        powerupCoroutine = null;
     }
 
     // If Player collides with enemy
@@ -70,7 +78,7 @@ public class PlayerControllerX : MonoBehaviour
         if (other.gameObject.CompareTag("Enemy"))
         {
             Rigidbody enemyRigidbody = other.gameObject.GetComponent<Rigidbody>();
-            Vector3 awayFromPlayer =  transform.position - other.gameObject.transform.position; 
+            Vector3 awayFromPlayer = other.gameObject.transform.position - transform.position;
            
             if (hasPowerup) // if have powerup hit enemy with powerup force
             {
@@ -84,7 +92,4 @@ public class PlayerControllerX : MonoBehaviour
 
         }
     }
-
-
-
 }
